@@ -1,0 +1,1 @@
+[ { "login": "admin", "password": "pass", "user_name": "Андрей", "is_admin": 1 }, { "login": "guest", "password": "guest", "user_name": "Гость", "is_admin": 0 }, { "login": "user", "password": "user", "user_name": "Пользователь", "is_admin": 0 } ]
