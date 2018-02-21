@@ -48,9 +48,6 @@ if (!file_exists($fontFile)) {
     exit();
 }
 
-foreach (getUsers() as $user) {
-    # code...
-}
 imagettftext($image, 25, 0, 390, 340, $textcolor, $fontFile, $userName);  
 imagettftext($image, 14, 0, 450, 395, $textcolor, $fontFile, $rating);
 header('Content-type: image/jpeg');
