@@ -33,3 +33,9 @@ function isAdmin()
 {
     return isAuthorized() && $_SESSION['user']['is_admin'] == 1;
 }
+
+// Проверка, является ли пользователь гостем
+function isGuest()
+{
+    return $_SESSION['user']['login'] == 'guest' && $_SESSION['user']['pass'] == 'guest';
+}
