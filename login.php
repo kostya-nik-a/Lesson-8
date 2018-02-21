@@ -2,7 +2,7 @@
 
 require_once 'function.php';
 
-if (isAuthorized()) {
+if (isAuthorized() && isAdmin()) {
     redirect('admin');
 }
 
@@ -11,13 +11,18 @@ $errors = [];
 if (!empty($_POST)) {
     foreach (getUsers() as $user) {
         if ($_POST['login'] == $user['login'] && $_POST['pass'] == $user['password']) {
+            if ($_POST['login'] == 'guest' && $_POST['pass'] == 'guest') {
+                if (empty($_POST['user_name'])) {
+                    echo 'Введите имя';
+                    die();
+                }
+                    $_SESSION['user'] = $user;
+                    $_SESSION['user']['user_name'] = $_POST['user_name'] ;
+                    redirect('list');
+        }
             $_SESSION['user'] = $user;
             redirect('admin');
         } 
-        elseif ($_POST['login'] == 'guest' && $_POST['pass'] == 'guest') {
-            $_SESSION['user'] = $user;
-            redirect('list');
-        }
     }
     $errors[] = 'Неверный логин или пароль';
 }
@@ -47,11 +52,16 @@ if (!empty($_POST)) {
                     Password: <input type="password" name="pass" value="">
                     </label>
                 </fieldset>
-                <button type="submit">Войти</button>  
+                <button type="submit">Войти</button> 
+            </div>
+        </form>
+        <form method="POST">
+            <div style="width: 50%; text-align: left;">
                 <fieldset>
                     <legend>
                         <h3>Или войдите как Гость</h3>
                     </legend> 
+                    Введите Ваше имя: <input type="text" name="user_name" value="">
                     <input type="hidden" name="login" value="guest">
                     <input type="hidden" name="pass" value="guest">
                     <button type="submit">Войти как гость</button>
