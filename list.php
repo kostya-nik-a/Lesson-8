@@ -7,13 +7,9 @@ if(!isAuthorized()) {
     die();
 }
 
-print_r($_SESSION['user']);
-
 $testDir = __DIR__."./tests";
 $tests_list = scandir($testDir);
 $numFiles=count(scandir($testDir))-1;
-//echo "<pre>";
-//print_r($tests_list);
 ?>
 
 
@@ -25,7 +21,7 @@ $numFiles=count(scandir($testDir))-1;
 </head>
 <body>
   <div>
-    <p>Доступные для прохождения тесты:</p>
+    <p><strong><?php echo $_SESSION['user']['user_name']?></strong>, Вам доступны для прохождения следующие тесты:</p>
     <?php 
       $i = 2;
       do {
@@ -38,6 +34,12 @@ $numFiles=count(scandir($testDir))-1;
         <input type="text" name="test_number"><br/>                
         <button type="submit">Пройти тест</button>    
     </form>
+
+    <?  if (isAdmin()) { ?>
+      <a href="admin.php" >Добавить тест</a>
+    <?php
+          }
+    ?>
   </div>
 </body>
 </html>
