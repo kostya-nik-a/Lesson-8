@@ -52,7 +52,7 @@ foreach ($tests as $qkey => $questions) {
         <title>Test</title>
     </head>
     <body>
-        <h1>Вы проходите тест: <?php echo '<i style="color: blue;">'.$tests['title'].'</i>' ?> </h1>
+        <h1><?php echo $_SESSION['user']['user_name']?>, Вы проходите тест: <?php echo '<i style="color: blue;">'.$tests['title'].'</i>' ?> </h1>
         <form action="image.php" method="POST">
             <div style="width: 50%; text-align: left;">
                 <?php 
@@ -116,19 +116,14 @@ foreach ($tests as $qkey => $questions) {
                     if (isAuthorized()) {
                         foreach (getUsers() as $user) {
                             if (($_SESSION['user'] == $user['login'] && $_SESSION['user'] == $user['password']) || 
-                                ($_SESSION['user'] == 'guest' && $_SESSION['user'] == 'guest')) {
+                                ($_SESSION['user'] == 'guest' && $_SESSION['pass'] == 'guest')) {
                                     $_SESSION['user'] = $user;
-                                    //$userName = $_SESSION['user']['user_name'];
-                                    //echo $userName;
                             }
                         $errors[] = 'Неверный логин или пароль';
-                ?>
-                <?php
-                    }}
-                    print_r ($_SESSION); echo '<br>';
+                        }
+                    }
 
                     $userName = $_SESSION['user']['user_name'];echo '<br>';
-                    echo $userName;echo '<br>';
 
                 ?>
                 <input type="hidden" name="user_name" value="<?php echo $userName ?>">
