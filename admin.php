@@ -8,6 +8,22 @@ if(!isAuthorized()) {
     die();
 }
 
+if (isAuthorized()) {
+    foreach (getUsers() as $user) {
+        if (($_SESSION['user'] == $user['login'] && $_SESSION['user'] == $user['password']) || isGuest()) {
+            $_SESSION['user'] = $user;
+        }
+    $errors[] = 'Неверный логин или пароль';
+    }
+}
+
+echo "Добро пожаловать, <strong>".$_SESSION['user']['user_name']."</strong>. ";
+if (isAdmin()) {
+echo "Вы вошли как Администратор.";echo '<br><br>';
+}
+
+
+
 $AdminUrl = $_SERVER['HTTP_HOST'] . $_SERVER["REQUEST_URI"];
 $listURL = dirname($AdminUrl) . "/list.php";     
 
@@ -77,34 +93,14 @@ legend { font-weight: 600;}
         <ul>
             	<?php 
             		$filesDir = scandir($testDir);
-                $numFiles=count(scandir($testDir))-2;
-                $filesDirs = array_slice($filesDir, 2);
-            		foreach ($filesDirs as $fd)
-        				{
+                    $numFiles=count(scandir($testDir))-2;
+                    $filesDirs = array_slice($filesDir, 2);
+            		foreach ($filesDirs as $fd) {
         					echo '<li>'.$fd.'</li>';
-                }
+                    }
         				
         		?>
         </ul>
-<?php
-                    if (isAuthorized()) {
-                        foreach (getUsers() as $user) {
-                            if (($_SESSION['user'] == $user['login'] && $_SESSION['user'] == $user['password']) || 
-                                ($_SESSION['user'] == 'guest' && $_SESSION['user'] == 'guest')) {
-                                    $_SESSION['user'] = $user;
-                                    //$userName = $_SESSION['user']['user_name'];
-                                    //echo $userName;
-                            }
-                        $errors[] = 'Неверный логин или пароль';
-                ?>
-                <?php
-                    }}
-                    print_r ($_SESSION); echo '<br>';
-
-                    echo $_SESSION['user']['user_name'];echo '<br>';
-                    //echo $userName;echo '<br>';
-
-                ?>
 
         <p>Можно перейти к выбору теста.</p>
         <hr>
@@ -115,6 +111,6 @@ legend { font-weight: 600;}
 
 </form>
 </div>
-
+<br>
 <a href="logout.php" >Выйти</a>
 </body>
