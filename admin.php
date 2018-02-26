@@ -4,7 +4,6 @@ require_once 'function.php';
 
 if(!isAuthorized()) {
     http_response_code(403);
-    //redirect('login');
     die();
 }
 
@@ -18,44 +17,51 @@ if (isAuthorized()) {
 }
 
 echo "Добро пожаловать, <strong>".$_SESSION['user']['user_name']."</strong>. ";
+
 if (isAdmin()) {
 echo "Вы вошли как Администратор.";echo '<br><br>';
 }
 
-
-
-$AdminUrl = $_SERVER['HTTP_HOST'] . $_SERVER["REQUEST_URI"];
-$listURL = dirname($AdminUrl) . "/list.php";     
-
-if(isset($_FILES["send_files"]) && !empty($_FILES["send_files"]) && $_FILES['send_files']['size'] !== 0) {
-    header("Location: http://"  . $listURL, true, 307);        
-} 
 
 if (!file_exists(__DIR__ . "/tests")) {
     mkdir(__DIR__ . "/tests");
 }
 $testDir = __DIR__."/tests";
 $message = '';
+
 if (isset($_FILES['send_files'])) {
     $file = $_FILES['send_files'];
 }
+
 if (isset($file['name']) && !empty($file['name'])) 
 {
-  if ($file['error'] == UPLOAD_ERR_OK)
-      {
+    if ($file['error'] == UPLOAD_ERR_OK)
+    {
+        move_uploaded_file($file['tmp_name'], $testDir.DIRECTORY_SEPARATOR.$file['name']);
+
       	$info = new SplFileInfo($file['name']);
         $fileType = $info->getExtension();
-        	if ($fileType != "json") {
-    			echo "Ошибка загрузки файла. Необходимо загрузить только файлы с расширением json. <a href='admin.php'> Назад </a> ";
-    			exit();
-    		  }
-    	  move_uploaded_file($file['tmp_name'], $testDir.DIRECTORY_SEPARATOR.$file['name']);
-      	$message = 'Файл успешно загружен';
-      }
-      else {
-      	$message = 'Файл не загружен: ';
-      	echo $message.$file['error'];
-      }
+        $contents = file_get_contents($testDir.DIRECTORY_SEPARATOR.$file['name']);
+        $tests = json_decode($contents, true);
+        
+        if ($fileType != "json") {
+            echo "Ошибка загрузки файла. Необходимо загрузить только файлы с расширением json. <br> <a href='admin.php'> Назад </a> ";
+            unlink($testDir.DIRECTORY_SEPARATOR.$file['name']);
+            exit();
+        }
+        elseif ($tests == null) {
+            echo "Неверная структура json <br> <a href='admin.php'> Назад </a>";
+            unlink($testDir.DIRECTORY_SEPARATOR.$file['name']);
+            exit();
+        }
+        
+            header("Location: list.php", true, 307); 
+            $message = 'Файл успешно загружен';
+    }
+    else {
+        $message = 'Файл не загружен: ';
+        echo $message.$file['error'];
+    }
 }
 ?>
 
@@ -80,11 +86,13 @@ legend { font-weight: 600;}
 			<p>Загрузите файлы с тестами в формаете JSON</p>
 			<input type="file" name="send_files" placeholder="Файл">
 			<hr>
-      <?  if (isAdmin()) { ?>
-			       <input type="submit" name="btn" value="Отправить файлы на сервер">
-      <?php
-          }
-      ?>
+        <?php  
+            if (isAdmin()) { 
+        ?>
+			<input type="submit" name="btn" value="Отправить файлы на сервер">
+        <?php
+            }
+        ?>
 			<p style="color: green;"><?php echo $message; ?></p>
 	</fieldset>
 	<fieldset>
@@ -101,9 +109,8 @@ legend { font-weight: 600;}
         				
         		?>
         </ul>
-
-        <p>Можно перейти к выбору теста.</p>
         <hr>
+        <p>Можно перейти к выбору теста.</p>
         <div>
           <input type="submit" formaction="list.php" name="ShowTestsList" value="К тестам =>" title="Перейти к выполнению тестов">
         </div>
